@@ -6,6 +6,14 @@ import { Label } from '@/components/ui/label';
 import { ApplicationFormData } from '@/lib/validations/application.schema';
 import { GENDER_OPTIONS, MARITAL_STATUS_OPTIONS } from '@/lib/constants';
 
+// Date helpers
+const today = () => new Date().toISOString().split('T')[0];
+const yearsAgo = (n: number) => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - n);
+  return d.toISOString().split('T')[0];
+};
+
 interface Step1PersonalProps {
   form: UseFormReturn<ApplicationFormData>;
 }
@@ -13,8 +21,13 @@ interface Step1PersonalProps {
 export function Step1Personal({ form }: Step1PersonalProps) {
   const {
     register,
+    watch,
     formState: { errors },
   } = form;
+
+  const birthDate = watch('birthDate');
+  // idIssueDate must be after birthDate and not in the future
+  const minIssueDate = birthDate || '1900-01-01';
 
   return (
     <div className="space-y-6">
@@ -82,6 +95,8 @@ export function Step1Personal({ form }: Step1PersonalProps) {
           <Input
             id="idIssueDate"
             type="date"
+            min={minIssueDate}
+            max={today()}
             {...register('idIssueDate')}
           />
           {errors.idIssueDate && (
@@ -99,6 +114,8 @@ export function Step1Personal({ form }: Step1PersonalProps) {
           <Input
             id="birthDate"
             type="date"
+            min="1900-01-01"
+            max={yearsAgo(18)}
             {...register('birthDate')}
           />
           {errors.birthDate && (

@@ -23,10 +23,11 @@ export async function getEvaluationByApplicationNumber(
   applicationNumber: string
 ): Promise<EvaluationData | null> {
   try {
-    const response = await apiClient.get<EvaluationData>(
+    const response = await apiClient.get<{ data: EvaluationData } | EvaluationData>(
       `/evaluations/${applicationNumber}`
     );
-    return response.data;
+    const payload = response.data;
+    return (payload as { data: EvaluationData }).data ?? (payload as EvaluationData);
   } catch (error: any) {
     // Return null if evaluation doesn't exist yet (404)
     if (error.response?.status === 404) {

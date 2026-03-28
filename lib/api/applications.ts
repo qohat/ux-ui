@@ -50,10 +50,13 @@ export async function getApplications(filters?: {
   limit?: number;
   offset?: number;
 }): Promise<ApplicationListItem[]> {
-  const response = await apiClient.get<ApplicationListItem[]>('/applications', {
-    params: filters,
-  });
-  return response.data;
+  const response = await apiClient.get<{ data: ApplicationListItem[] } | ApplicationListItem[]>(
+    '/applications',
+    { params: filters }
+  );
+  // Backend may wrap response in { data: [...] }
+  const payload = response.data;
+  return Array.isArray(payload) ? payload : (payload as { data: ApplicationListItem[] }).data ?? [];
 }
 
 /**
@@ -62,8 +65,9 @@ export async function getApplications(filters?: {
 export async function getApplicationDetails(
   applicationNumber: string
 ): Promise<ApplicationDetails> {
-  const response = await apiClient.get<ApplicationDetails>(
+  const response = await apiClient.get<{ data: ApplicationDetails } | ApplicationDetails>(
     `/applications/${applicationNumber}`
   );
-  return response.data;
+  const payload = response.data;
+  return (payload as { data: ApplicationDetails }).data ?? (payload as ApplicationDetails);
 }

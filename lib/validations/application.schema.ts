@@ -40,7 +40,13 @@ export const step1Schema = z.object({
 
   maritalStatus: z.enum(['soltero', 'casado', 'union_libre', 'divorciado', 'viudo']),
 
-  idIssueDate: z.string().min(1, 'La fecha de expedición es requerida'),
+  idIssueDate: z
+    .string()
+    .min(1, 'La fecha de expedición es requerida')
+    .refine((date) => {
+      const d = new Date(date);
+      return d <= new Date();
+    }, 'La fecha de expedición no puede ser futura'),
 
   mobile: z
     .string()
