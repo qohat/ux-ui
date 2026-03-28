@@ -1,0 +1,19 @@
+FE
+
+Stack Next JS app:
+
+Portal con dos formularios:
+
+- Un formlario de solicitud de crédito con los campos de solicitud, incluye archivos y otras cosas (No requiere autenticación)
+- Un formulario de analisis de crédito basado en los campos del proceso (require authenticación)
+- Se requiere un login
+- Los forms deben dividirse en steps para que la experiencia sea buena
+- Los forms deben almacenar en sesion el estado del formulario por cada paso
+- Los forms deben tener todas las validaciones
+- Los forms deben recolectar todos los datos para enviar al backend
+- Los datos deben ser recolectado de acuerdo a lo que pida el api.
+- El front end debe tener pruebas, sobretodo en la parte de la validación de campos y la recoleccion de datos para enviar al back
+- El Json debe tener los campos que pide el backend para que se haga el registro en la base de datos de la forma correcta
+- No hay posibilidad para el error, haz el mapeo claro de los campos para que ese no sea un problema
+
+Elabora la propuesta
