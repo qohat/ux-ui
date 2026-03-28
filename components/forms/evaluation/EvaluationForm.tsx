@@ -45,11 +45,12 @@ export function EvaluationForm({ application, initialData }: EvaluationFormProps
   });
 
   const { watch } = form;
+  const formValues = watch();
 
   // Form persistence
   const { save, load } = useFormPersistence(
     `evaluation-${application.applicationNumber}`,
-    form,
+    formValues,
     currentTab
   );
 
@@ -89,8 +90,7 @@ export function EvaluationForm({ application, initialData }: EvaluationFormProps
       await saveEvaluationDraft(application.applicationNumber, formData);
 
       alert('Borrador guardado exitosamente');
-    } catch (error) {
-      console.error('Error saving draft:', error);
+    } catch {
       alert('Error al guardar el borrador. Los datos se guardaron localmente.');
     }
   };
@@ -119,7 +119,6 @@ export function EvaluationForm({ application, initialData }: EvaluationFormProps
         alert('Error al enviar la evaluación: ' + response.message);
       }
     } catch (error: any) {
-      console.error('Error submitting evaluation:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
       alert('Error al enviar la evaluación: ' + errorMessage);
     } finally {

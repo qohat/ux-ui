@@ -57,9 +57,8 @@ export default function DashboardPage() {
         setLoading(true);
         const data = await getApplications();
         setApplications(data);
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-        // Fallback to mock data if API fails
+      } catch {
+        // API not available — fall back to mock data silently
         setApplications(mockApplications);
       } finally {
         setLoading(false);

@@ -43,6 +43,12 @@ export function ApplicationForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [files, setFiles] = useState<{
+    bankCert?: File;
+    idFront?: File;
+    idBack?: File;
+    photoProfile?: File;
+  }>({});
 
   const { currentStep, goToNext, goToPrevious, goToStep, isFirstStep, isLastStep, progress } =
     useMultiStepForm(APPLICATION_STEPS.TOTAL);
@@ -78,16 +84,6 @@ export function ApplicationForm() {
     try {
       // Import API function dynamically to avoid issues
       const { submitApplication } = await import('@/lib/api/applications');
-
-      // Get files from form state (these would be stored separately)
-      // For now, we'll simulate file handling
-      const files = {
-        // In real implementation, these would come from Step6Documents state
-        // bankCert: bankCertFile,
-        // idFront: idFrontFile,
-        // idBack: idBackFile,
-        // photoProfile: photoProfileFile,
-      };
 
       // Submit application
       const response = await submitApplication(data, files);
@@ -155,7 +151,11 @@ export function ApplicationForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <StepComponent form={form} />
+            {currentStep === APPLICATION_STEPS.DOCUMENTS ? (
+              <Step6Documents form={form} files={files} onFilesChange={setFiles} />
+            ) : (
+              <StepComponent form={form} />
+            )}
 
             {/* Error Message */}
             {submitError && (

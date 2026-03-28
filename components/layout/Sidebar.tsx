@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, CheckSquare } from 'lucide-react';
+import { Home, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
@@ -10,16 +10,13 @@ const navigation = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: Home,
-  },
-  {
-    name: 'Solicitudes',
-    href: '/dashboard',
-    icon: FileText,
+    exact: true,
   },
   {
     name: 'Evaluaciones',
-    href: '/dashboard?tab=evaluaciones',
+    href: '/dashboard',
     icon: CheckSquare,
+    exact: true,
   },
 ];
 
@@ -31,7 +28,9 @@ export function Sidebar() {
       <nav className="p-4 space-y-2">
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(item.href);
+        const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
 
           return (
             <Link

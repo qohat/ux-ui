@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Store, Wrench, Factory, Sprout } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 import { EvaluationFormData } from '@/lib/validations/evaluation.schema';
 import { CurrencyInput } from '@/components/forms/shared/CurrencyInput';
 
@@ -15,88 +14,50 @@ interface Tab6ContingencyProps {
 
 export function Tab6Contingency({ form }: Tab6ContingencyProps) {
   const { register, watch, setValue } = form;
-  const [selectedActivity, setSelectedActivity] = useState<string>('commerce');
+
+  const economicActivity = watch('summary_economicActivity') || '';
+
+  // Determine category from activity
+  const isCommerce = ['comercio'].includes(economicActivity);
+  const isServices = ['servicios', 'independiente', 'empleado'].includes(economicActivity);
+  const isManufacturing = ['manufactura'].includes(economicActivity);
+  const isAgriculture = ['agricultura', 'ganaderia'].includes(economicActivity);
 
   return (
     <div className="space-y-6">
+      {/* Economic Activity Selector */}
       <Card>
         <CardHeader>
-          <CardTitle>Actividad Económica</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5" />
+            Actividad Económica
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div>
-            <Label htmlFor="summary_economicActivity">Descripción de la Actividad Económica</Label>
-            <textarea
-              id="summary_economicActivity"
-              rows={3}
-              className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              placeholder="Describa brevemente la actividad económica principal del cliente..."
-              {...register('summary_economicActivity')}
-            />
-          </div>
+          <Label htmlFor="summary_economicActivity">Actividad Económica del Solicitante</Label>
+          <select
+            id="summary_economicActivity"
+            className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            {...register('summary_economicActivity')}
+          >
+            <option value="">Seleccione la actividad</option>
+            <option value="comercio">Comercio</option>
+            <option value="servicios">Servicios</option>
+            <option value="manufactura">Manufactura</option>
+            <option value="agricultura">Agricultura</option>
+            <option value="ganaderia">Ganadería</option>
+            <option value="independiente">Independiente</option>
+            <option value="empleado">Empleado</option>
+            <option value="otro">Otro</option>
+          </select>
         </CardContent>
       </Card>
 
-      {/* Activity Type Selector */}
-      <div className="grid md:grid-cols-4 gap-4">
-        <button
-          type="button"
-          onClick={() => setSelectedActivity('commerce')}
-          className={`p-4 rounded-lg border-2 transition-all ${
-            selectedActivity === 'commerce'
-              ? 'border-primary bg-primary/5'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <Store className="h-8 w-8 mx-auto mb-2" />
-          <p className="text-sm font-medium">Comercio</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => setSelectedActivity('services')}
-          className={`p-4 rounded-lg border-2 transition-all ${
-            selectedActivity === 'services'
-              ? 'border-primary bg-primary/5'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <Wrench className="h-8 w-8 mx-auto mb-2" />
-          <p className="text-sm font-medium">Servicios</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => setSelectedActivity('manufacturing')}
-          className={`p-4 rounded-lg border-2 transition-all ${
-            selectedActivity === 'manufacturing'
-              ? 'border-primary bg-primary/5'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <Factory className="h-8 w-8 mx-auto mb-2" />
-          <p className="text-sm font-medium">Manufactura</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => setSelectedActivity('agriculture')}
-          className={`p-4 rounded-lg border-2 transition-all ${
-            selectedActivity === 'agriculture'
-              ? 'border-primary bg-primary/5'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <Sprout className="h-8 w-8 mx-auto mb-2" />
-          <p className="text-sm font-medium">Agrícola</p>
-        </button>
-      </div>
-
-      {/* Commerce Fields */}
-      {selectedActivity === 'commerce' && (
+      {/* Commerce */}
+      {isCommerce && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Store className="h-5 w-5" />
-              Análisis de Comercio
-            </CardTitle>
+            <CardTitle>Análisis de Contingencia - Comercio</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
@@ -105,7 +66,7 @@ export function Tab6Contingency({ form }: Tab6ContingencyProps) {
                   id="contingency_commerce_inventory"
                   label="Valor del Inventario"
                   value={watch('contingency_commerce_inventory') || 0}
-                  onChange={(value) => setValue('contingency_commerce_inventory', value)}
+                  onChange={(v) => setValue('contingency_commerce_inventory', v)}
                   placeholder="$0"
                 />
               </div>
@@ -114,60 +75,43 @@ export function Tab6Contingency({ form }: Tab6ContingencyProps) {
                   id="contingency_commerce_salesVolume"
                   label="Volumen de Ventas Mensual"
                   value={watch('contingency_commerce_salesVolume') || 0}
-                  onChange={(value) => setValue('contingency_commerce_salesVolume', value)}
+                  onChange={(v) => setValue('contingency_commerce_salesVolume', v)}
                   placeholder="$0"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="contingency_commerce_suppliers">Proveedores Principales</Label>
-              <Input
-                id="contingency_commerce_suppliers"
-                placeholder="Ej: Proveedor A, Proveedor B..."
-                {...register('contingency_commerce_suppliers')}
-              />
+              <Label htmlFor="contingency_commerce_suppliers">Principales Proveedores</Label>
+              <Input id="contingency_commerce_suppliers" {...register('contingency_commerce_suppliers')} className="mt-1" />
             </div>
             <div>
               <Label htmlFor="contingency_commerce_location">Ubicación del Negocio</Label>
-              <Input
-                id="contingency_commerce_location"
-                placeholder="Describa la ubicación y características del local..."
-                {...register('contingency_commerce_location')}
-              />
+              <Input id="contingency_commerce_location" {...register('contingency_commerce_location')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_commerce_competition">Análisis de Competencia</Label>
-              <textarea
-                id="contingency_commerce_competition"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Describa la competencia en el sector..."
-                {...register('contingency_commerce_competition')}
-              />
+              <Label htmlFor="contingency_commerce_competition">Competencia</Label>
+              <Input id="contingency_commerce_competition" {...register('contingency_commerce_competition')} className="mt-1" />
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Services Fields */}
-      {selectedActivity === 'services' && (
+      {/* Services */}
+      {isServices && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5" />
-              Análisis de Servicios
-            </CardTitle>
+            <CardTitle>Análisis de Contingencia - Servicios</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="contingency_services_clients">Número de Clientes Activos</Label>
+                <Label htmlFor="contingency_services_clients">Número de Clientes</Label>
                 <Input
                   id="contingency_services_clients"
                   type="number"
-                  min="0"
-                  placeholder="0"
+                  min={0}
                   {...register('contingency_services_clients', { valueAsNumber: true })}
+                  className="mt-1"
                 />
               </div>
               <div>
@@ -175,164 +119,117 @@ export function Tab6Contingency({ form }: Tab6ContingencyProps) {
                   id="contingency_services_avgTicket"
                   label="Ticket Promedio"
                   value={watch('contingency_services_avgTicket') || 0}
-                  onChange={(value) => setValue('contingency_services_avgTicket', value)}
+                  onChange={(v) => setValue('contingency_services_avgTicket', v)}
                   placeholder="$0"
                 />
               </div>
               <div>
-                <Label htmlFor="contingency_services_staff">Personal Empleado</Label>
+                <Label htmlFor="contingency_services_staff">Número de Empleados</Label>
                 <Input
                   id="contingency_services_staff"
                   type="number"
-                  min="0"
-                  placeholder="0"
+                  min={0}
                   {...register('contingency_services_staff', { valueAsNumber: true })}
+                  className="mt-1"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="contingency_services_equipment">Equipamiento y Herramientas</Label>
-              <Input
-                id="contingency_services_equipment"
-                placeholder="Describa el equipamiento principal..."
-                {...register('contingency_services_equipment')}
-              />
+              <Label htmlFor="contingency_services_equipment">Equipos y Herramientas</Label>
+              <Input id="contingency_services_equipment" {...register('contingency_services_equipment')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_services_licenses">Licencias y Certificaciones</Label>
-              <textarea
-                id="contingency_services_licenses"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Liste las licencias y certificaciones relevantes..."
-                {...register('contingency_services_licenses')}
-              />
+              <Label htmlFor="contingency_services_licenses">Licencias y Permisos</Label>
+              <Input id="contingency_services_licenses" {...register('contingency_services_licenses')} className="mt-1" />
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Manufacturing Fields */}
-      {selectedActivity === 'manufacturing' && (
+      {/* Manufacturing */}
+      {isManufacturing && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Factory className="h-5 w-5" />
-              Análisis de Manufactura
-            </CardTitle>
+            <CardTitle>Análisis de Contingencia - Manufactura</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="contingency_manufacturing_capacity">Capacidad de Producción</Label>
-              <Input
-                id="contingency_manufacturing_capacity"
-                placeholder="Ej: 1000 unidades/mes"
-                {...register('contingency_manufacturing_capacity')}
-              />
+              <Input id="contingency_manufacturing_capacity" {...register('contingency_manufacturing_capacity')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_manufacturing_machinery">Maquinaria y Equipo</Label>
-              <textarea
-                id="contingency_manufacturing_machinery"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Describa la maquinaria principal..."
-                {...register('contingency_manufacturing_machinery')}
-              />
+              <Label htmlFor="contingency_manufacturing_machinery">Maquinaria y Equipos</Label>
+              <Input id="contingency_manufacturing_machinery" {...register('contingency_manufacturing_machinery')} className="mt-1" />
             </div>
             <div>
               <Label htmlFor="contingency_manufacturing_rawMaterials">Materias Primas</Label>
-              <Input
-                id="contingency_manufacturing_rawMaterials"
-                placeholder="Principales materias primas utilizadas..."
-                {...register('contingency_manufacturing_rawMaterials')}
-              />
+              <Input id="contingency_manufacturing_rawMaterials" {...register('contingency_manufacturing_rawMaterials')} className="mt-1" />
             </div>
             <div>
               <Label htmlFor="contingency_manufacturing_production">Proceso de Producción</Label>
-              <textarea
-                id="contingency_manufacturing_production"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Describa el proceso de producción..."
-                {...register('contingency_manufacturing_production')}
-              />
+              <Input id="contingency_manufacturing_production" {...register('contingency_manufacturing_production')} className="mt-1" />
             </div>
             <div>
               <Label htmlFor="contingency_manufacturing_distribution">Canales de Distribución</Label>
-              <Input
-                id="contingency_manufacturing_distribution"
-                placeholder="¿Cómo distribuye sus productos?"
-                {...register('contingency_manufacturing_distribution')}
-              />
+              <Input id="contingency_manufacturing_distribution" {...register('contingency_manufacturing_distribution')} className="mt-1" />
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Agriculture Fields */}
-      {selectedActivity === 'agriculture' && (
+      {/* Agriculture */}
+      {isAgriculture && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sprout className="h-5 w-5" />
-              Análisis Agrícola
-            </CardTitle>
+            <CardTitle>Análisis de Contingencia - Agricultura / Ganadería</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="contingency_agriculture_landSize">Extensión de Tierra</Label>
-              <Input
-                id="contingency_agriculture_landSize"
-                placeholder="Ej: 10 hectáreas"
-                {...register('contingency_agriculture_landSize')}
-              />
+              <Label htmlFor="contingency_agriculture_landSize">Extensión del Terreno</Label>
+              <Input id="contingency_agriculture_landSize" {...register('contingency_agriculture_landSize')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_agriculture_crops">Cultivos Principales</Label>
-              <Input
-                id="contingency_agriculture_crops"
-                placeholder="Ej: Café, maíz, plátano..."
-                {...register('contingency_agriculture_crops')}
-              />
+              <Label htmlFor="contingency_agriculture_crops">Cultivos / Productos</Label>
+              <Input id="contingency_agriculture_crops" {...register('contingency_agriculture_crops')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_agriculture_livestock">Ganadería</Label>
-              <Input
-                id="contingency_agriculture_livestock"
-                placeholder="Tipo y cantidad de ganado..."
-                {...register('contingency_agriculture_livestock')}
-              />
+              <Label htmlFor="contingency_agriculture_livestock">Inventario Pecuario</Label>
+              <Input id="contingency_agriculture_livestock" {...register('contingency_agriculture_livestock')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_agriculture_equipment">Maquinaria Agrícola</Label>
-              <textarea
-                id="contingency_agriculture_equipment"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Describa la maquinaria disponible..."
-                {...register('contingency_agriculture_equipment')}
-              />
+              <Label htmlFor="contingency_agriculture_equipment">Equipos Agrícolas</Label>
+              <Input id="contingency_agriculture_equipment" {...register('contingency_agriculture_equipment')} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="contingency_agriculture_climate">Condiciones Climáticas y Riesgos</Label>
-              <textarea
-                id="contingency_agriculture_climate"
-                rows={3}
-                className="mt-1 flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Describa condiciones climáticas y riesgos potenciales..."
-                {...register('contingency_agriculture_climate')}
-              />
+              <Label htmlFor="contingency_agriculture_climate">Condiciones Climáticas / Riesgos</Label>
+              <Input id="contingency_agriculture_climate" {...register('contingency_agriculture_climate')} className="mt-1" />
             </div>
           </CardContent>
         </Card>
       )}
 
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-        <p className="text-sm text-blue-800">
-          <strong>Nota:</strong> El análisis de contingencia debe evaluar los riesgos específicos del sector económico y las medidas de mitigación implementadas por el cliente.
-        </p>
-      </div>
+      {/* Fallback when no activity selected */}
+      {!economicActivity && (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <p className="text-sm text-blue-800">
+            Seleccione la actividad económica del solicitante para ver los campos de análisis de contingencia correspondientes.
+          </p>
+        </div>
+      )}
+
+      {/* Other activity */}
+      {economicActivity === 'otro' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Análisis de Contingencia - Otra Actividad</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600">
+              No hay campos específicos para esta actividad. Use los comentarios de la Mesa de Crédito para documentar el análisis.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

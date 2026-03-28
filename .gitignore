@@ -63,3 +63,9 @@ Thumbs.db
 
 # typescript
 *.tsbuildinfo
+
+# SWC cache
+.swc/
+
+# Local AI settings
+.claude/settings.local.json

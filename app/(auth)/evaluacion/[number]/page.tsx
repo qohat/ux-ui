@@ -67,13 +67,10 @@ export default function EvaluationPage() {
 
         // Fetch application details and existing evaluation in parallel
         const [appDetails, existingEvaluation] = await Promise.all([
-          getApplicationDetails(applicationNumber).catch(() => {
-            // If API fails, use mock data
-            return {
-              ...mockApplicationDetails,
-              applicationNumber,
-            };
-          }),
+          getApplicationDetails(applicationNumber).catch(() => ({
+            ...mockApplicationDetails,
+            applicationNumber,
+          })),
           getEvaluationByApplicationNumber(applicationNumber).catch(() => null),
         ]);
 
@@ -83,8 +80,7 @@ export default function EvaluationPage() {
         if (existingEvaluation) {
           setEvaluationData(existingEvaluation);
         }
-      } catch (err) {
-        console.error('Error fetching data:', err);
+      } catch {
         setError('Error al cargar la solicitud. Por favor intente nuevamente.');
       } finally {
         setLoading(false);

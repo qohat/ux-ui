@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FileUpload } from '@/components/forms/shared/FileUpload';
 import { SignatureCanvas } from '@/components/forms/shared/SignatureCanvas';
@@ -9,9 +8,21 @@ import { ApplicationFormData } from '@/lib/validations/application.schema';
 
 interface Step6DocumentsProps {
   form: UseFormReturn<ApplicationFormData>;
+  files?: {
+    bankCert?: File;
+    idFront?: File;
+    idBack?: File;
+    photoProfile?: File;
+  };
+  onFilesChange?: (files: {
+    bankCert?: File;
+    idFront?: File;
+    idBack?: File;
+    photoProfile?: File;
+  }) => void;
 }
 
-export function Step6Documents({ form }: Step6DocumentsProps) {
+export function Step6Documents({ form, files = {}, onFilesChange }: Step6DocumentsProps) {
   const {
     formState: { errors },
     setValue,
@@ -19,10 +30,14 @@ export function Step6Documents({ form }: Step6DocumentsProps) {
     register,
   } = form;
 
-  const [bankCert, setBankCert] = useState<File | null>(null);
-  const [idFront, setIdFront] = useState<File | null>(null);
-  const [idBack, setIdBack] = useState<File | null>(null);
-  const [photoProfile, setPhotoProfile] = useState<File | null>(null);
+  const bankCert = files.bankCert ?? null;
+  const idFront = files.idFront ?? null;
+  const idBack = files.idBack ?? null;
+  const photoProfile = files.photoProfile ?? null;
+
+  const setFile = (key: keyof typeof files, file: File | null) => {
+    onFilesChange?.({ ...files, [key]: file ?? undefined });
+  };
 
   const signature = watch('signature') || '';
   const termsConsent = watch('termsConsent');
@@ -42,7 +57,7 @@ export function Step6Documents({ form }: Step6DocumentsProps) {
         <FileUpload
           label="Certificado Bancario"
           value={bankCert}
-          onChange={setBankCert}
+          onChange={(f) => setFile('bankCert', f)}
           required
           accept={['application/pdf', 'image/jpeg', 'image/png']}
           id="bankCert"
@@ -51,7 +66,7 @@ export function Step6Documents({ form }: Step6DocumentsProps) {
         <FileUpload
           label="Cédula - Lado Frontal"
           value={idFront}
-          onChange={setIdFront}
+          onChange={(f) => setFile('idFront', f)}
           required
           accept={['image/jpeg', 'image/png']}
           id="idFront"
@@ -60,7 +75,7 @@ export function Step6Documents({ form }: Step6DocumentsProps) {
         <FileUpload
           label="Cédula - Lado Posterior"
           value={idBack}
-          onChange={setIdBack}
+          onChange={(f) => setFile('idBack', f)}
           required
           accept={['image/jpeg', 'image/png']}
           id="idBack"
@@ -69,7 +84,7 @@ export function Step6Documents({ form }: Step6DocumentsProps) {
         <FileUpload
           label="Foto de Perfil"
           value={photoProfile}
-          onChange={setPhotoProfile}
+          onChange={(f) => setFile('photoProfile', f)}
           required
           accept={['image/jpeg', 'image/png']}
           id="photoProfile"
